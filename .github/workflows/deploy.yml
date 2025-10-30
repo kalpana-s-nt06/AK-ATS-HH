@@ -22,6 +22,12 @@ jobs:
           source: "dist/*"
           target: "/var/www/ats/frontend/dist/"
           overwrite: true
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        script: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+          npm ci
+          npm run build
 
       - name: Restart Frontend application
         uses: appleboy/ssh-action@v1.0.3
@@ -32,3 +38,4 @@ jobs:
           script: |
             sudo nginx -t
             sudo systemctl reload nginx
+            echo "Frontend deployment completed successfully"
