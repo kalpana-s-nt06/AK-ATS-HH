@@ -16,7 +16,7 @@ jobs:
       - name: Setup environment and build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-        #run: |
+        run: |
          # echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
           npm ci
           npm run build
