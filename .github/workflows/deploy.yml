@@ -13,6 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup environment and build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+          npm ci
+          npm run build
+
       - name: Deploy to AWS EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -22,12 +30,6 @@ jobs:
           source: "dist/*"
           target: "/var/www/ats/frontend/dist/"
           overwrite: true
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-        script: |
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
-          npm ci
-          npm run build
 
       - name: Restart Frontend application
         uses: appleboy/ssh-action@v1.0.3
