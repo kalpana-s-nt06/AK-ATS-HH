@@ -21,7 +21,19 @@ jobs:
         run: |
           echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
           npm ci
+          chmod +x node_modules/vite/bin/vite.js || true
+          chmod +x node_modules/@esbuild/linux-x64/bin/esbuild || true
           npm run build
+
+      - name: Create target directory on EC2 (if not exists)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo mkdir -p /var/www/ats/frontend
+            sudo chown -R ubuntu:ubuntu /var/www/ats/frontend
 
       - name: Deploy built files to AWS EC2
         uses: appleboy/scp-action@v0.1.7
