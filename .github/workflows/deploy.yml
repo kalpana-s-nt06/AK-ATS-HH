@@ -7,28 +7,23 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: Deployment
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      # Step 3: Install dependencies and build
-      - name: Setup environment and build
+      - name: Install dependencies and build
         run: |
           echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
           npm ci
           npm run build
 
-      # Step 4: Deploy built files to EC2
-      - name: Deploy to AWS EC2
+      - name: Deploy built files to AWS EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -38,8 +33,7 @@ jobs:
           target: "/var/www/ats/frontend/"
           overwrite: true
 
-      # Step 5: Restart Nginx to serve the new build
-      - name: Restart Frontend application
+      - name: Reload Nginx
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
